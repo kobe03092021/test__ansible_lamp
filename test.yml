@@ -1,0 +1,53 @@
+- hosts: test-server
+  tasks:
+
+
+- name: install git
+  yum: name={{ item }} state=installed
+  with_items:
+    - vim
+    - zsh
+    - git
+    - zip
+    - unzip
+
+- name: install kernel
+  yum: name={{ item }} state=installed
+  with_items:
+    -  kernel
+    -  kernel-devel
+    -  kernel-headers
+    -  dkms
+    -  gcc
+    -  gcc-c++
+
+
+- name: install httpd
+  tasks:
+    name: httpd
+    state: present
+
+- name: install php
+  yum: name={{item}} state=latest
+  with_items:
+  - httpd
+  - php
+  - php-devel
+  - php-mbstring
+  - php-mysql
+  - mysql
+  - mysql-devel
+  - mysql-server
+
+  notify:
+    - httpd restart
+  handlers:
+    - name: httpd resart
+      service: name=httpd state=restarted
+
+  - name: install mysql repository
+    yum: name=http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm state=present
+  - name: install mysql
+    yum: name=mysql-server state=latest
+  - name=: mysql start / enable
+    service: name=mysqld state=started enabled=yes
