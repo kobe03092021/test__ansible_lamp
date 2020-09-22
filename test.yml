@@ -1,6 +1,5 @@
-- hosts: test-server
+- hosts: lamp
   tasks:
-
 
 - name: install git
   yum: name={{ item }} state=installed
@@ -22,28 +21,32 @@
     -  gcc-c++
 
 
-- name: install httpd
+- name : install httpd
+  sudo : yes
   tasks:
-    name: httpd
-    state: present
+  - name: install httpd
+    yum: namme=httpd state=latest
+  - name: start httpd
+    yum: namme=httpd state=started enebled=yes
+  notify:
+  - httpd restart
+  handlers:
+  - name: httpd restart
+  service: name=httpd state=restarted
 
 - name: install php
-  yum: name={{item}} state=latest
+  yum: name={{item}} state=latest enablerepo=remi,remi-php53
   with_items:
-  - httpd
-  - php
-  - php-devel
-  - php-mbstring
-  - php-mysql
-  - mysql
-  - mysql-devel
-  - mysql-server
-
-  notify:
-    - httpd restart
-  handlers:
-    - name: httpd resart
-      service: name=httpd state=restarted
+    - php
+    - php-devel
+    - php-mysqlnd
+    - php-mbstring
+    - php-mcrypt
+    - php-gd
+    - php-opcache
+    - php-fpm
+    - php-pecl-xdebug
+    - php-xml
 
   - name: install mysql repository
     yum: name=http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm state=present
